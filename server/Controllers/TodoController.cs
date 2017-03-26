@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Minder.Server.Models;
 
@@ -66,12 +64,19 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            if (todo.ParentKey != null)
+            bool parentChanged = todo.ParentKey != item.ParentKey;
+
+            if (parentChanged)
             {
-                TodoItem parentItem = todoRepository.Find( () item)
+                UpdateParent(todo, (p, c) => p.RemoveChildItem(c));
             }
 
             todo.CopyFrom(item);
+
+            if (parentChanged)
+            {
+                UpdateParent(todo, (p, c) => p.AddChildItem(c));
+            }
 
             todoRepository.Update(todo);
             return new NoContentResult();

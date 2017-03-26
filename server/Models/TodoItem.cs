@@ -9,7 +9,7 @@ namespace Minder.Server.Models
     {
         private const string DEFAULT_NAME = "New Todo Item";
         private DateTime? dueOn;
-        private IList<TodoItem> childItems;
+        private IList<long> childItems;
 
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
@@ -30,7 +30,7 @@ namespace Minder.Server.Models
         public DateTime CreatedOn { get; }
         public long? ParentKey { get; set; }
 
-        public IList<TodoItem> ChildItems
+        public IEnumerable<long> ChildItems
         {
             get
             {
@@ -42,7 +42,7 @@ namespace Minder.Server.Models
         public TodoItem()
         {
             this.CreatedOn = DateTime.UtcNow;
-            this.childItems = new List<TodoItem>();
+            this.childItems = new List<long>();
         }
 
         public void AddChildItem(TodoItem child)
@@ -52,7 +52,16 @@ namespace Minder.Server.Models
                 throw new ArgumentNullException();
             }
             child.ParentKey = this.Key;
-            this.childItems.Add(child);
+            this.childItems.Add(child.Key);
+        }
+
+        public void RemoveChildItem(TodoItem child)
+        {
+            if (child == null)
+            {
+                throw new ArgumentNullException();
+            }
+            this.childItems.Remove(child.Key);
         }
 
         public void OnChildIsCompleteChange(bool newValue)
@@ -65,6 +74,7 @@ namespace Minder.Server.Models
             this.Name = item.Name;
             this.IsComplete = item.IsComplete;
             this.DueOn = item.DueOn;
+            this.ParentKey = item.ParentKey;
         }
     }
 }
