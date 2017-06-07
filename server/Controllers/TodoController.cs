@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Minder.Server.Models;
+using System;
+using System.Collections.Generic;
 
 namespace server.Controllers
 {
